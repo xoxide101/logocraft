@@ -21,7 +21,7 @@ How LogoCraft is built and what to keep in mind when changing it. For what it do
 
 - **Units:** the canvas works in pixels at **150 DPI** (`PC.px(mm)`); the artboard has a print size in mm. Export picks a render DPI so the cut-out area comes out at the asked pixel width (capped at 16000 px for the whole artboard), then shrinks in halves for small sizes so icons stay smooth.
 - **Logo** (`PC.doc`): `{ app: 'LogoCraft', version, kind: 'logo', board, name, retro, retroMode, retroDot, panels: [{ name: 'Artboard', w, h, bg, json }] }`. `bg: null` means see-through (the canvas shows a checkerboard behind it).
-- **Artboards** (`PC.ARTBOARDS`): square 160 × 160, wide 240 × 120, tall 120 × 240, long banner 300 × 100, app icon 128 × 128 mm. Changing the artboard keeps objects centred.
+- **Artboards** (`PC.ARTBOARDS`, `[name, w mm, h mm, pixels?]`): `px1024`, `px512`, `px256` are exactly that many canvas pixels (`n / 150 × 25.4` mm), the default for new square logos; then square 160 × 160, wide 240 × 120, tall 120 × 240, long banner 300 × 100, app icon 128 × 128 mm. Changing the artboard keeps objects centred.
 - **Layers:** every Fabric object. Extra saved props (`PROPS`): `name` (layer name) and `lockAll` (not selectable or evented). `visible` and `globalCompositeOperation` (blend mode) are saved by Fabric itself. Groups made with Group have `kind: 'group'`.
 - **Export area:** with Trim, the union of visible objects' bounding boxes plus a padding percentage; ICO makes it square.
 

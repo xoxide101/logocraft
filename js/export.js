@@ -147,7 +147,7 @@
     segs('ex-fmt', Object.entries(FORMATS).map(([k, f]) => [k, f[0]]), o.fmt, (v) => { o.fmt = v; show(); preview(); });
     $('ex-fmt-tip').textContent = FORMATS[o.fmt][1];
     $('ex-size-f').hidden = ico; $('ex-multi-f').hidden = vec || ico || o.fmt === 'pdf';
-    $('ex-size').innerHTML = SIZES.map((s) => `<option value="${s}" ${s === o.size ? 'selected' : ''}>${s} pixels wide${s === 1024 ? ' (good all-round)' : s === 32 ? ' (tiny icon)' : ''}</option>`).join('') + `<option value="custom" ${o.size === 'custom' ? 'selected' : ''}>Custom…</option>`;
+    $('ex-size').innerHTML = SIZES.map((s) => `<option value="${s}" ${s === o.size ? 'selected' : ''}>${s} pixels wide${PC.ARTBOARDS[PC.doc.board] && PC.ARTBOARDS[PC.doc.board][3] === s ? ' (the artboard)' : s === 1024 ? ' (good all-round)' : s === 32 ? ' (tiny icon)' : ''}</option>`).join('') + `<option value="custom" ${o.size === 'custom' ? 'selected' : ''}>Custom…</option>`;
     $('ex-size-f').querySelector('span').textContent = vec ? 'Width in pixels (it can be made any size later)' : o.fmt === 'pdf' ? 'Sharpness (pixels wide)' : 'Width in pixels';
     $('ex-custom-f').hidden = ico || o.size !== 'custom';
     $('ex-multi').checked = o.multi; $('ex-size').disabled = o.multi && !$('ex-multi-f').hidden;
@@ -181,6 +181,9 @@
   PC.openExport = function () {
     if (!PC.doc) return;
     $('ex-name').value = baseName();
+    const pxb = PC.ARTBOARDS[PC.doc.board] && PC.ARTBOARDS[PC.doc.board][3];
+    if (pxb && o.board !== PC.doc.board) { o.size = pxb; o.trim = false; } // a pixel artboard exports at its own size, whole
+    o.board = PC.doc.board;
     const cur = document.documentElement.dataset.backdrop || 'checker';
     $('ex-backdrop').innerHTML = PC.ui.BACKDROPS.map(([k, n]) => `<option value="${k}" ${k === cur ? 'selected' : ''}>${n === 'No' ? 'None' : n}</option>`).join('');
     $('ex-backdrop').onchange = () => PC.ui.setBackdrop($('ex-backdrop').value);

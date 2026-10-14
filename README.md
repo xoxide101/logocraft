@@ -42,7 +42,7 @@ Your logo autosaves in the browser; **Save** keeps a `.logocraft.json` file you 
 | **App icon** | A rounded square with a gradient and a letter |
 | **Retro computer** | The 1980s dot-matrix look with a pixel font |
 
-Six colour sets (navy and gold, red and black, forest, teal and purple, sunset, black ink) and five artboard shapes (square, wide, tall, long banner, app icon). The background is see-through unless you choose white or a colour. To check the see-through parts while you work, switch the **backdrop** behind them (View or Artboard tab, and in the Export preview): checkerboard, white, black, none, mid grey, colour gradient or busy stripes. The backdrop is never exported.
+Six colour sets (navy and gold, red and black, forest, teal and purple, sunset, black ink). Artboards: **1024 × 1024, 512 × 512 and 256 × 256 pixels** (new logos start at 1024 × 1024, a good master size that exports cleanly to any smaller size), plus square, wide, tall, long banner and app icon in mm for print. On a pixel artboard, Export starts at exactly that size, the whole artboard. The background is see-through unless you choose white or a colour. To check the see-through parts while you work, switch the **backdrop** behind them (View or Artboard tab, and in the Export preview): checkerboard, white, black, none, mid grey, colour gradient or busy stripes. The backdrop is never exported.
 
 ![The badge template](docs/badge.png)
 

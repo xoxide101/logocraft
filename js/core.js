@@ -152,7 +152,9 @@
   // ------------------------------------------------------------------ project setup
   // Panels (the faces you design) for each kind of project, in mm.
   // LogoCraft: one artboard. Sizes are in mm at print size (a logo can be exported at any pixel size).
-  const ARTBOARDS = { square: ['Square', 160, 160], wide: ['Wide', 240, 120], tall: ['Tall', 120, 240], banner: ['Long banner', 300, 100], icon: ['App icon', 128, 128] };
+  const pxMM = (n) => Math.round((n / DPI) * 25.4 * 1000) / 1000; // an artboard exactly n pixels wide (the canvas works at 150 DPI)
+  const ARTBOARDS = { px1024: ['1024 × 1024 px', pxMM(1024), pxMM(1024), 1024], px512: ['512 × 512 px', pxMM(512), pxMM(512), 512], px256: ['256 × 256 px', pxMM(256), pxMM(256), 256],
+    square: ['Square', 160, 160], wide: ['Wide', 240, 120], tall: ['Tall', 120, 240], banner: ['Long banner', 300, 100], icon: ['App icon', 128, 128] };
   PC.ARTBOARDS = ARTBOARDS;
   function panelsFor(d) {
     const a = ARTBOARDS[d.board] || ARTBOARDS.square;
