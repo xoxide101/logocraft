@@ -42,7 +42,7 @@ Your logo autosaves in the browser; **Save** keeps a `.logocraft.json` file you 
 | **App icon** | A rounded square with a gradient and a letter |
 | **Retro computer** | The 1980s dot-matrix look with a pixel font |
 
-Six colour sets (navy and gold, red and black, forest, teal and purple, sunset, black ink) and five artboard shapes (square, wide, tall, long banner, app icon). The background is see-through unless you choose white or a colour.
+Six colour sets (navy and gold, red and black, forest, teal and purple, sunset, black ink) and five artboard shapes (square, wide, tall, long banner, app icon). The background is see-through unless you choose white or a colour. To check the see-through parts while you work, switch the **backdrop** behind them (View or Artboard tab, and in the Export preview): checkerboard, white, black, none, mid grey, colour gradient or busy stripes. The backdrop is never exported.
 
 ![The badge template](docs/badge.png)
 
@@ -76,6 +76,7 @@ The Artboard tab switches between **Modern**, **Retro B&W** (dithered black dots
 
 ## Objects and text (the same in every Craft app)
 
+- **Every slider has a box beside it** to type the exact value (Enter or Tab to apply).
 - **Opacity** on everything, **shadows**, rotation.
 - **Shapes**: box, rounded box, circle, triangle, diamond, pentagon, hexagon, octagon, star, arrow and line, with sharp or round corners, words inside, **3-D** sides (face, side and edge colours) and **three border lines** (outer, middle, inner).
 - **Text** like Word: fonts, bold, italic, underline, strikethrough, sub- and superscript, colours, highlight, outline, case, lists, spacing.

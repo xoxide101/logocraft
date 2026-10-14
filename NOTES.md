@@ -28,3 +28,7 @@ How LogoCraft is built and what to keep in mind when changing it. For what it do
 ## Testing
 
 Headless Chrome over the DevTools protocol: each template is created from the start screen, then every export format is produced with `PC.exportFile(fmt, width, options)` and checked for size and type.
+
+## Sliders you can type into
+
+`js/range-type.js` (loaded last) adds a number box beside every `input[type=range]`, including ones built later (a MutationObserver watches the page). Typing fires the same `input` and `change` events as dragging, so panels need no changes. Wrap a slider in `[data-rt-skip]` to leave it alone. Each app has its own copy.

@@ -181,6 +181,9 @@
   PC.openExport = function () {
     if (!PC.doc) return;
     $('ex-name').value = baseName();
+    const cur = document.documentElement.dataset.backdrop || 'checker';
+    $('ex-backdrop').innerHTML = PC.ui.BACKDROPS.map(([k, n]) => `<option value="${k}" ${k === cur ? 'selected' : ''}>${n === 'No' ? 'None' : n}</option>`).join('');
+    $('ex-backdrop').onchange = () => PC.ui.setBackdrop($('ex-backdrop').value);
     $('exportdlg').hidden = false; show(); preview();
   };
   async function oneFile(fmt, width, opt) {

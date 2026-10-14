@@ -174,3 +174,11 @@ input[type="range"] { width: 100%; }
 .tpl-colours label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
 .tpl-colours i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
 .tpl-colours input { position: absolute; opacity: 0; pointer-events: none; }
+
+/* Backdrop behind see-through parts (View › Backdrop). Screen only, never exported. */
+:root[data-backdrop="white"] .sheet-frame, :root[data-backdrop="white"] .checker { background: #ffffff; }
+:root[data-backdrop="black"] .sheet-frame, :root[data-backdrop="black"] .checker { background: #000000; }
+:root[data-backdrop="none"] .sheet-frame, :root[data-backdrop="none"] .checker { background: transparent; box-shadow: 0 0 0 1px var(--line); }
+:root[data-backdrop="grey"] .sheet-frame, :root[data-backdrop="grey"] .checker { background: #808080; }
+:root[data-backdrop="gradient"] .sheet-frame, :root[data-backdrop="gradient"] .checker { background: linear-gradient(135deg, #ff2d55, #ffcc00 25%, #34c759 50%, #0a84ff 75%, #bf5af2); }
+:root[data-backdrop="stripes"] .sheet-frame, :root[data-backdrop="stripes"] .checker { background: repeating-linear-gradient(45deg, #ff00aa 0 6px, #00e5ff 6px 12px, #111 12px 18px, #fff 18px 24px); }

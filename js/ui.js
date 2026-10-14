@@ -974,7 +974,7 @@
     $('cap').textContent = '';
   }
   PC.on('panel', () => { renderLayers(); renderPagesTools(); fitZoom(); showProps(); status(); drawRetro(); });
-  PC.on('changed', () => { status(); clearTimeout(thumbT); thumbT = setTimeout(() => thumb(PC.cur), 900); if (window.__tb) window.__tb.update(); });
+  PC.on('changed', () => { status(); renderLayers(); if (window.__tb) window.__tb.update(); });
 
   // ------------------------------------------------------------------ dialogs
   const toastEl = $('toast'); let toastT;
@@ -1187,6 +1187,13 @@
   paintTheme();
   const setRetro = (on, mode) => { if (!PC.doc) return; PC.doc.retro = on; if (mode) PC.doc.retroMode = mode; drawRetro(); canvas.requestRenderAll(); PC.changed(); showProps(); status(); };
   const zoomBy = (k) => { autoFit = false; setZoom(PC.zoom * k); };
+  // What shows through see-through parts on screen and in the Export preview. It is never exported.
+  const BACKDROPS = [['checker', 'Checkerboard'], ['white', 'White'], ['black', 'Black'], ['none', 'No'], ['grey', 'Mid grey'], ['gradient', 'Colour gradient'], ['stripes', 'Busy stripes']];
+  let backdrop = 'checker';
+  try { backdrop = localStorage.getItem('logocraft-backdrop') || 'checker'; } catch (e) {}
+  function setBackdrop(k) { backdrop = k; document.documentElement.dataset.backdrop = k; try { localStorage.setItem('logocraft-backdrop', k); } catch (e) {} if (window.__tb) ribbon.refresh && ribbon.refresh(); }
+  PC.ui.setBackdrop = setBackdrop; PC.ui.BACKDROPS = BACKDROPS;
+  document.documentElement.dataset.backdrop = backdrop;
   const MENUS = [
     ['File', [
       { label: 'New logo…', key: 'Ctrl+N', run: showStart },
@@ -1262,6 +1269,9 @@
       { label: 'Zoom in', key: '+', run: () => zoomBy(1.25) },
       { label: 'Zoom out', key: '−', run: () => zoomBy(0.8) },
       { label: 'Fit the artboard', key: '0', run: () => { autoFit = true; fitZoom(); } },
+      '-',
+      { heading: 'Backdrop behind see-through parts (screen only)' },
+      ...BACKDROPS.map(([k, n]) => ({ label: `${n} backdrop`, run: () => setBackdrop(k), checked: () => backdrop === k })),
       '-',
       { heading: 'Theme' },
       { label: 'Match system', run: () => { setTheme('system'); paintTheme(); }, checked: () => getTheme() === 'system' },
@@ -1427,6 +1437,7 @@
       { id: 'page', label: 'Artboard', hue: '#7b4fd6', groups: [
         ['Shape', [{ col: [C('Square artboard', 'Square', IC.big), C('Wide artboard', 'Wide', IC.rowL), C('Tall artboard', 'Tall', IC.big)] }, { col: [C('Long banner artboard', 'Long banner', IC.rowL), C('App icon artboard', 'App icon', IC.big)] }]],
         ['Background', [{ col: [C('See-through', 'See-through', IC.retro), C('White background', 'White', I.box)] }]],
+        ['Backdrop', [{ col: [C('Checkerboard backdrop', 'Checkerboard', IC.tiled), C('White backdrop', 'White', I.box), C('Black backdrop', 'Black', I.box)] }, { col: [C('Mid grey backdrop', 'Mid grey', I.box), C('Colour gradient backdrop', 'Gradient', IC.magic), C('Busy stripes backdrop', 'Stripes', IC.justify)] }, { col: [C('No backdrop', 'None', I.trash)] }]],
         ['Look', [C('Modern', 'Modern', I.desktop, { big: true }), C('Retro black', 'Retro B&W', IC.retro, { big: true }), C('Retro colour', 'Retro colour', IC.retro, { big: true })]],
         ['View', [{ col: [C('Zoom in', 'Zoom in', I.zoomIn), C('Zoom out', 'Zoom out', I.zoomOut), C('Fit the artboard', 'Fit', I.fit)] }]],
       ] },

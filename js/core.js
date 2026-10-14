@@ -142,6 +142,10 @@
     if (keepCentre) { neu.set({ angle: old.angle || 0 }); neu.setPositionByOrigin(old.getCenterPoint(), 'center', 'center'); }
     if (old.opacity != null && old.opacity !== 1) neu.set('opacity', old.opacity);
     if (old.shadow && !neu.shadow && neu.kind !== 'shape') neu.set('shadow', old.shadow);
+    // a rebuilt object stays the same layer: name, lock, visibility and blend mode carry over
+    ['name', 'lockAll', 'visible', 'globalCompositeOperation', 'selectable', 'evented'].forEach((k) => { if (old[k] !== undefined && neu[k] === undefined || k === 'name' && old.name) neu[k] = old[k]; });
+    if (old.visible === false) neu.visible = false;
+    if (old.globalCompositeOperation && old.globalCompositeOperation !== 'source-over') neu.globalCompositeOperation = old.globalCompositeOperation;
     const idx = cv.getObjects().indexOf(old);
     quietly(() => { cv.remove(old); cv.insertAt(neu, Math.max(0, idx)); });
     neu.setCoords();
