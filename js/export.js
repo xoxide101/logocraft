@@ -100,9 +100,9 @@
     const p = PC.doc.panels[0], r = region(o), k = width / r.w, keep = p.bg;
     const dpi = Math.min(DPI * k, DPI * (16000 / Math.max(PC.px(p.w), PC.px(p.h))));
     const kk = dpi / DPI;
-    p.bg = null;
+    const keepPaint = p.paint; p.bg = null; if (o.bg && o.bg !== 'board') p.paint = null; // a patterned or picture background goes out only "as the artboard"
     let full;
-    try { full = await PC.renderPanel(0, dpi); } finally { p.bg = keep; }
+    try { full = await PC.renderPanel(0, dpi); } finally { p.bg = keep; p.paint = keepPaint; }
     const out = document.createElement('canvas'); out.width = Math.max(1, Math.round(width)); out.height = Math.max(1, Math.round(r.h * k));
     const x = out.getContext('2d');
     const bg = bgFor(o) || (o.opaque ? '#ffffff' : null);
@@ -121,8 +121,8 @@
   async function svgText(o, width) {
     PC.saveLive();
     const p = PC.doc.panels[0], keep = p.bg, r = region(o);
-    p.bg = null;
-    let s; try { s = await PC.renderPanelSVG(0); } finally { p.bg = keep; }
+    const keepPaint = p.paint; p.bg = null; if (o.bg && o.bg !== 'board') p.paint = null;
+    let s; try { s = await PC.renderPanelSVG(0); } finally { p.bg = keep; p.paint = keepPaint; }
     const bg = bgFor(o), h = (r.h / r.w) * width;
     return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${Math.round(width)}" height="${Math.round(h)}" viewBox="${r.x.toFixed(2)} ${r.y.toFixed(2)} ${r.w.toFixed(2)} ${r.h.toFixed(2)}">\n`
       + `<!-- Made with LogoCraft -->\n${bg ? `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${bg}"/>\n` : ''}${s.inner}\n</svg>\n`;

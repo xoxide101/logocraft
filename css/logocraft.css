@@ -182,3 +182,5 @@ input[type="range"] { width: 100%; }
 :root[data-backdrop="grey"] .sheet-frame, :root[data-backdrop="grey"] .checker { background: #808080; }
 :root[data-backdrop="gradient"] .sheet-frame, :root[data-backdrop="gradient"] .checker { background: linear-gradient(135deg, #ff2d55, #ffcc00 25%, #34c759 50%, #0a84ff 75%, #bf5af2); }
 :root[data-backdrop="stripes"] .sheet-frame, :root[data-backdrop="stripes"] .checker { background: repeating-linear-gradient(45deg, #ff00aa 0 6px, #00e5ff 6px 12px, #111 12px 18px, #fff 18px 24px); }
+/* button rows wrap instead of widening the side panel (fill pickers have five choices) */
+.seg { flex-wrap: wrap; } .seg .btn { min-width: 0; flex: 1 1 auto; white-space: nowrap; } .side.right { overflow-x: hidden; }
