@@ -225,7 +225,7 @@
   });
   // Dingbats: classic symbol characters in groups (the same set in every Craft app). They are text, so colour,
   // size, shadow, outline, gradients and rotation all work on them. DINGBAT_FONT is a list of fonts that have them.
-  const DINGBAT_FONT = "'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Apple Symbols', 'DejaVu Sans', 'Arial Unicode MS', sans-serif";
+  const DINGBAT_FONT = "'Noto Sans Symbols 2', 'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Apple Symbols', 'DejaVu Sans', 'Arial Unicode MS', sans-serif";
   const DINGBATS = [
     ['Arrows', '← → ↑ ↓ ↔ ↕ ↖ ↗ ↘ ↙ ⇐ ⇒ ⇑ ⇓ ⇔ ➔ ➜ ➙ ➛ ➝ ➞ ➟ ➠ ➡ ➢ ➣ ➤ ➥ ➦ ➧ ➨ ➩ ➪ ➫ ➬ ➭ ➮ ➯ ➱ ➲ ➳ ➵ ➸ ➺ ➻ ➼ ➽ ➾ ↩ ↪ ↺ ↻ ⟲ ⟳'],
     ['Checks and crosses', '✓ ✔ ✗ ✘ ☐ ☑ ☒ ✕ ✖ ✚ ✛ ✜ ✙ ✠ ✟ ✞ ✝'],
@@ -263,15 +263,27 @@
   }
   const loadImg = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
   const quietly = PC.quietly;
-  // ---- Dingbats tab
-  $('ding-cat').innerHTML = DINGBATS.map(([n], i) => `<option value="${i}">${n}</option>`).join('');
-  const renderDing = () => { $('ding-grid').innerHTML = DINGBATS[+$('ding-cat').value][1].map((ch) => `<button data-ding="${ch}" title="${ch}">${ch}</button>`).join(''); };
-  $('ding-cat').onchange = renderDing; renderDing();
-  $('ding-grid').onclick = (e) => {
-    const b = e.target.closest('[data-ding]'); if (!b || !PC.doc) return;
-    const t = new fabric.IText(b.dataset.ding, { fontFamily: DINGBAT_FONT, fontSize: ptPx(Math.round(72 * scaleK())), fill: '#222222', kind: 'text', wrap: true, textAlign: 'center' });
+  // ---- Symbols: dingbats and emoji (the picker is in the Symbols tab and in a window from Insert)
+  // While typing, the symbol goes in at the cursor (in the font it needs); otherwise it becomes a big symbol of its own.
+  function insertSymbol(r) {
+    if (!PC.doc) return;
+    const o = active(), font = r.kind === 'emoji' ? (r.font ? `'Noto Emoji', ${CraftSymbols.EMOJI_COLOUR}` : CraftSymbols.EMOJI_COLOUR) : r.font ? `'${r.font}', ${DINGBAT_FONT}` : DINGBAT_FONT;
+    if (o && kindOf(o) === 'text' && o.isEditing) {
+      const a = o.selectionStart, n = fabric.util.string.graphemeSplit(r.char).length;
+      if (o.selectionEnd > a) o.removeChars(a, o.selectionEnd);
+      o.insertChars(r.char, null, a);
+      o.setSelectionStyles({ fontFamily: font }, a, a + n);
+      o.selectionStart = o.selectionEnd = a + n; syncEditing(o);
+      o.initDimensions(); o.setCoords(); canvas.requestRenderAll(); PC.changed();
+      return;
+    }
+    if (r.font) PC.loadFonts([r.font]);
+    const t = new fabric.IText(r.char, { fontFamily: font, fontSize: ptPx(Math.round(72 * scaleK())), fill: '#222222', kind: 'text', wrap: true, textAlign: 'center' });
     place(t); showProps();
-  };
+  }
+  const openSymbols = () => CraftSymbols.open({ onPick: insertSymbol });
+  PC.ui.insertSymbol = insertSymbol; PC.ui.openSymbols = openSymbols;
+  CraftSymbols.mount($('sym-panel'), { onPick: insertSymbol });
   // ---- Colour fills for pictures (works on any picture with a see-through background) and text
   async function fillPicture(o, f) {
     if (!o.origSrc) o.origSrc = o.getSrc();
@@ -1330,7 +1342,7 @@
       '-',
       { label: 'Picture…', run: () => showTab('art') },
       { label: 'My own picture…', run: () => $('image-input').click() },
-      { label: 'Dingbats…', run: () => showTab('dingbats') },
+      { label: 'Symbols and emoji…', run: () => openSymbols() },
       { label: 'Border…', run: () => showTab('borders') },
       { label: 'Screen Magic…', run: () => showTab('magic') },
       { heading: 'Shapes' },
@@ -1484,8 +1496,8 @@
   const SPACE_BTN = menuButton('Letter spacing', '<path d="M5 13 8 5l3 8M6 10.5h4M13 5l3 8 3-8M3 18h18M5 16l-2 2 2 2M19 16l2 2-2 2"/>', [['-60', 'Tight'], ['0', 'Normal'], ['100', 'Wide'], ['250', 'Wider'], ['500', 'Widest']], (v) => format({ spacing: +v }));
   const SYMBOLS = '© ® ™ ° ± × ÷ ½ ¼ ¾ € £ ¥ ¢ § ¶ • … → ← ↑ ↓ ✓ ✗ ★ ☆ ♥ ☎ ✉ ⚠ ♻ ✂ ☀ ☂ ♪ ♫ ∞ ≤ ≥ ≠'.split(/\s+/);
   const SYMBOL_BTN = menuButton('Insert a symbol or the date', '<path d="M17 17.5A7 7 0 1 1 19 12v1.5a2 2 0 0 1-4 0V8"/><circle cx="12" cy="12" r="3"/>',
-    [['date', 'Date and time…'], ...SYMBOLS.map((c) => [c, c])],
-    (v) => { if (v === 'date') insertDate(); else insertText(v); });
+    [['more', 'Symbols and emoji…'], ['date', 'Date and time…'], ...SYMBOLS.map((c) => [c, c])],
+    (v) => { if (v === 'date') insertDate(); else if (v === 'more') openSymbols(); else insertText(v); });
   const syncFontBox = () => { const f = current('font'), s2 = current('size'); const sl = FONT_BOX.querySelector('select'), si = FONT_BOX.querySelector('input'); if (document.activeElement !== sl && f) sl.value = f; if (document.activeElement !== si) si.value = s2 ?? ''; };
   canvas.on('selection:created', syncFontBox); canvas.on('selection:updated', syncFontBox);
   const toggleL = document.createElement('button'); toggleL.className = 'crb-small'; toggleL.textContent = 'Side panel'; toggleL.onclick = () => $('app').querySelector('.work').classList.toggle('show-left');
@@ -1509,7 +1521,7 @@
         ['Shapes', [{ col: [
           { row: [C('Box', 'Box', SH.rect, ico), C('Rounded box', 'Rounded box', SH.rounded, ico), C('Circle', 'Circle', SH.ellipse, ico), C('Triangle', 'Triangle', SH.triangle, ico), C('Diamond', 'Diamond', SH.diamond, ico)] },
           { row: [C('Pentagon', 'Pentagon', SH.pentagon, ico), C('Hexagon', 'Hexagon', SH.hexagon, ico), C('Octagon', 'Octagon', SH.octagon, ico), C('Star shape', 'Star', SH.star, ico), C('Arrow', 'Arrow', SH.arrow, ico), C('Line', 'Line', I.line, ico)] }] }]],
-        ['Seals and symbols', [C('Seal rings', 'Seal rings', IC.rings, { big: true, title: 'Two or three rings for a seal or stamp' }), C('Curved text', 'Curved text', IC.curveUp, { big: true }), C('Dingbats', 'Dingbats', IC.star, { big: true })]],
+        ['Seals and symbols', [C('Seal rings', 'Seal rings', IC.rings, { big: true, title: 'Two or three rings for a seal or stamp' }), C('Curved text', 'Curved text', IC.curveUp, { big: true }), C('Symbols and emoji', 'Symbols & emoji', IC.star, { big: true, title: 'Dingbats, knitting symbols and emoji' })]],
       ] },
       { id: 'text', label: 'Text', hue: '#2f6fdd', groups: [
         ['Font', [{ col: [
