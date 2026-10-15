@@ -77,6 +77,7 @@ The Artboard tab switches between **Modern**, **Retro B&W** (dithered black dots
 ## Objects and text (the same in every Craft app)
 
 - **Date and time** (Insert menu and the Text tab): 16 formats including stamps like `14 OCT 2026`, with words before and after. **Fixed** types it in once; **Update automatically** makes a field that always shows the current date or time (on opening, printing and exporting; double-click it to change the format, or make it fixed text).
+- **Zoom slider in the status bar** (like Word): −, a slider with 100% in the middle, +, the percentage (click to type one) and Fit. Double-click the slider for 100%.
 - **Every slider has a box beside it** to type the exact value (Enter or Tab to apply).
 - **Opacity** on everything, **shadows**, rotation.
 - **Shapes**: box, rounded box, circle, triangle, diamond, pentagon, hexagon, octagon, star, arrow and line, with sharp or round corners, words inside, **3-D** sides (face, side and edge colours) and **three border lines** (outer, middle, inner).
