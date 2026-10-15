@@ -181,6 +181,7 @@
   PC.openExport = function () {
     if (!PC.doc) return;
     $('ex-name').value = baseName();
+    $('ex-smooth').checked = PC.doc.smooth !== false; $('ex-smooth').onchange = () => { PC.doc.smooth = $('ex-smooth').checked; PC.changed(); preview(); };
     const pxb = PC.ARTBOARDS[PC.doc.board] && PC.ARTBOARDS[PC.doc.board][3];
     if (pxb && o.board !== PC.doc.board) { o.size = pxb; o.trim = false; } // a pixel artboard exports at its own size, whole
     o.board = PC.doc.board;
