@@ -96,6 +96,25 @@
   </div>
 </div>
 
+<!-- Picture to SVG (trace) -->
+<div class="backdrop" id="tracedlg" hidden>
+  <div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="trace-title">
+    <h2 id="trace-title">Picture to SVG</h2>
+    <div class="trace-grid">
+      <div><div class="trace-prev checker" id="trace-src"></div><p class="hint">Your picture</p></div>
+      <div><div class="trace-prev checker" id="trace-out"></div><p class="hint" id="trace-info">The outlines</p></div>
+      <div class="trace-opts">
+        <div class="field"><span>Colours</span><div class="seg" id="tr-mode"><button class="btn" data-m="auto">Best match</button><button class="btn" data-m="n">Choose</button></div></div>
+        <label class="field" id="tr-n-f"><span>How many colours: <b id="tr-n-v">4</b></span><input type="range" id="tr-n" min="2" max="16" value="4"></label>
+        <label class="field"><span>Detail: <b id="tr-detail-v">6</b></span><input type="range" id="tr-detail" min="1" max="10" value="6"></label>
+        <label class="field"><span>Smoothing: <b id="tr-smooth-v">1</b></span><input type="range" id="tr-smooth" min="0" max="5" value="1"></label>
+        <label class="check"><input type="checkbox" id="tr-bg" checked> Leave out the background colour</label>
+      </div>
+    </div>
+    <div class="dialog-actions"><button class="btn" id="tr-pick">Choose another picture…</button><span style="flex:1"></span><button class="btn" id="tr-cancel">Cancel</button><button class="btn outline" id="tr-save">Save as SVG</button><button class="btn primary" id="tr-go">Put it on the artboard</button></div>
+  </div>
+</div>
+
 <!-- Messages and help -->
 <div class="backdrop" id="info" hidden>
   <div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="info-title">
@@ -122,6 +141,8 @@
 <script src="fonts/fonts-list.js"></script>
 <script src="js/craft-fonts.js"></script>
 <script src="js/craft-symbols.js"></script>
+<script src="lib/imagetracer.js"></script>
+<script src="js/tracer.js"></script>
 <script src="js/core.js"></script>
 <script src="js/export.js"></script>
 <script src="js/ui.js"></script>

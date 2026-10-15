@@ -46,6 +46,10 @@ Six colour sets (navy and gold, red and black, forest, teal and purple, sunset, 
 
 ![The badge template](docs/badge.png)
 
+### Picture to SVG
+
+**Insert › Picture to SVG** (or **Trace into outlines** on any picture on the artboard) turns a picture or an old logo into clean vector outlines: **Best match** finds how many colours it really has (soft anti-aliased edges are left out), or choose 2 to 16, with detail and smoothing, and the background left out. Put the result on the artboard as vector shapes (ungroup to recolour one colour at a time) or save it straight away as an SVG file. The same tracer turns pictures into 3D in 3DCraft.
+
 ### Layers
 
 - Every object is a layer. The list shows them front to back.
@@ -108,7 +112,7 @@ A current Chrome, Edge or Firefox. No internet needed after downloading.
 
 ## Coming next
 
-- **Phase 2:** turn a picture into an SVG logo (choose how many colours, or the best match), magic-wand selection to delete, fill or recolour areas, eraser and soft (anti-aliased) edges.
+- **Phase 2:** magic-wand selection to delete, fill or recolour areas, eraser and soft (anti-aliased) edges.
 - **Phase 3:** pen tool and point editing, combining shapes (union, subtract, intersect), align and distribute.
 
 ## How this was made

@@ -1001,7 +1001,7 @@
       ] }, posSection(o, true), arrangeSection()]);
     }
     if (k === 'image') {
-      return render('Your picture', [fillSection(o, 'image'), { title: 'Picture', items: [
+      return render('Your picture', [{ title: 'Vector outlines', items: [{ t: 'btns', buttons: [{ label: 'Trace into outlines (SVG)…', on: () => openTraceLogo(o.getSrc()) }] }, { t: 'note', html: 'Turns this picture into clean, sharp vector shapes in a few colours: just right for logos.' }] }, fillSection(o, 'image'), { title: 'Picture', items: [
         { t: 'check', label: 'Black and white', value: !!(o.filters && o.filters.length), on: (v) => { o.filters = v ? [new fabric.Image.filters.Grayscale()] : []; o.applyFilters(); canvas.requestRenderAll(); PC.changed(); } },
         wrapItem(o),
       ] }, shadowSection(o), layoutSection(), posSection(o), arrangeSection()]);
@@ -1242,6 +1242,46 @@
     canvas.discardActiveObject(); canvas.requestRenderAll();
   };
 
+  // ------------------------------------------------------------------ Picture to SVG (the tracer is shared with 3DCraft)
+  let trSrc = null, trRes = null, trMode = 'auto', trT = null;
+  const trPick = () => new Promise((res) => { const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.onchange = () => { const f = i.files[0]; if (!f) return res(null); const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); }; i.click(); });
+  async function openTraceLogo(src) {
+    if (!PC.doc) return;
+    trSrc = src || await trPick(); if (!trSrc) return;
+    $('tracedlg').hidden = false; trSync(); trRun();
+  }
+  PC.ui.openTraceLogo = openTraceLogo;
+  function trSync() {
+    document.querySelectorAll('#tr-mode [data-m]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.m === trMode)));
+    $('tr-n-f').hidden = trMode !== 'n'; ['n', 'detail', 'smooth'].forEach((k) => { $(`tr-${k}-v`).textContent = $(`tr-${k}`).value; });
+    $('trace-src').innerHTML = `<img src="${trSrc}" alt="Your picture">`;
+  }
+  function trRun() {
+    clearTimeout(trT);
+    trT = setTimeout(async () => {
+      $('trace-info').textContent = 'Tracing…';
+      try {
+        trRes = await CraftTracer.trace(trSrc, { colors: trMode === 'auto' ? 'auto' : +$('tr-n').value, detail: +$('tr-detail').value, smooth: +$('tr-smooth').value, removeBg: $('tr-bg').checked });
+        $('trace-out').innerHTML = trRes.svg; $('trace-info').textContent = `${trRes.colors} colours${trMode === 'auto' ? ' (best match)' : ''}, ${trRes.paths} outlines`;
+        if (trMode === 'auto') { $('tr-n').value = trRes.colors; $('tr-n-v').textContent = trRes.colors; }
+      } catch (e) { $('trace-info').textContent = e.message; }
+    }, 200);
+  }
+  document.querySelectorAll('#tr-mode [data-m]').forEach((b) => { b.onclick = () => { trMode = b.dataset.m; trSync(); trRun(); }; });
+  ['tr-n', 'tr-detail', 'tr-smooth', 'tr-bg'].forEach((id) => { $(id).addEventListener('input', () => { trSync(); trRun(); }); $(id).addEventListener('change', () => { trSync(); trRun(); }); });
+  $('tr-pick').onclick = async () => { const s = await trPick(); if (s) { trSrc = s; trSync(); trRun(); } };
+  $('tr-cancel').onclick = () => { $('tracedlg').hidden = true; };
+  $('tr-save').onclick = () => { if (!trRes) return; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([trRes.svg], { type: 'image/svg+xml' })); a.download = (PC.doc.name || 'logo').replace(/[^\w -]+/g, '') + '-traced.svg'; document.body.append(a); a.click(); a.remove(); };
+  $('tr-go').onclick = () => {
+    if (!trRes || !trRes.paths) return toast('Nothing was traced yet: try more colours or turn off "Leave out the background".');
+    fabric.loadSVGFromString(trRes.svg, (objs, opts) => {
+      const g = fabric.util.groupSVGElements(objs, opts); g.name = 'Traced picture';
+      const p = panel(), k = Math.min((px(p.w) * 0.7) / g.width, (px(p.h) * 0.7) / g.height); g.set({ scaleX: k, scaleY: k });
+      place(g); $('tracedlg').hidden = true; PC.changed(); showProps(); toast('Traced into vector outlines. Ungroup it (Ctrl+Shift+G) to change one colour at a time.');
+    });
+  };
+  $('tracedlg').addEventListener('keydown', (e) => { if (e.key === 'Escape') $('tracedlg').hidden = true; });
+
   // ------------------------------------------------------------------ files
   let fileName = null;
   function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
@@ -1342,6 +1382,7 @@
       '-',
       { label: 'Picture…', run: () => showTab('art') },
       { label: 'My own picture…', run: () => $('image-input').click() },
+      { label: 'Picture to SVG (trace)…', run: () => openTraceLogo() },
       { label: 'Symbols and emoji…', run: () => openSymbols() },
       { label: 'Border…', run: () => showTab('borders') },
       { label: 'Screen Magic…', run: () => showTab('magic') },
@@ -1517,7 +1558,7 @@
       ] },
       { id: 'insert', label: 'Insert', hue: '#e07a1f', groups: [
         ['Words', [C('Title', 'Title', IC.title, { big: true, title: 'A big title with outline, shadow or 3-D' }), C('Text', 'Text', I.text, { big: true, title: 'Simple text you can type anywhere' }), C('Text box', 'Text box', IC.textbox, { big: true, title: 'Words in a box that wrap, with a border, background, padding and shadow' })]],
-        ['Pictures', [C('Picture…', 'Picture', I.picture, { big: true, title: 'Choose from the LogoCraft picture library' }), { col: [C('My own picture', 'My own picture', I.import), C('Border', 'Border', IC.border), C('Screen Magic', 'Screen Magic', IC.magic)] }]],
+        ['Pictures', [C('Picture…', 'Picture', I.picture, { big: true, title: 'Choose from the LogoCraft picture library' }), C('Picture to SVG', 'Picture to SVG', IC.retro, { big: true, title: 'Trace a picture or logo into clean vector outlines (choose how many colours, or best match)' }), { col: [C('My own picture', 'My own picture', I.import), C('Border', 'Border', IC.border), C('Screen Magic', 'Screen Magic', IC.magic)] }]],
         ['Shapes', [{ col: [
           { row: [C('Box', 'Box', SH.rect, ico), C('Rounded box', 'Rounded box', SH.rounded, ico), C('Circle', 'Circle', SH.ellipse, ico), C('Triangle', 'Triangle', SH.triangle, ico), C('Diamond', 'Diamond', SH.diamond, ico)] },
           { row: [C('Pentagon', 'Pentagon', SH.pentagon, ico), C('Hexagon', 'Hexagon', SH.hexagon, ico), C('Octagon', 'Octagon', SH.octagon, ico), C('Star shape', 'Star', SH.star, ico), C('Arrow', 'Arrow', SH.arrow, ico), C('Line', 'Line', I.line, ico)] }] }]],

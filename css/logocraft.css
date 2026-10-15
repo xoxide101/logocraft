@@ -188,3 +188,10 @@ input[type="range"] { width: 100%; }
 /* Symbols tab: the dingbat and emoji picker fills the panel */
 #tab-dingbats:not([hidden]) { display: flex; flex-direction: column; min-height: 0; height: 100%; }
 .sym-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 8px; }
+
+/* Picture to SVG */
+.trace-grid { display: grid; grid-template-columns: 1fr 1fr 230px; gap: 14px; align-items: start; }
+.trace-prev { aspect-ratio: 1; border: 1px solid var(--line); border-radius: 8px; display: grid; place-items: center; overflow: hidden; }
+.trace-prev img, .trace-prev svg { max-width: 100%; max-height: 100%; }
+.trace-opts { display: grid; gap: 8px; }
+@media (max-width: 820px) { .trace-grid { grid-template-columns: 1fr 1fr; } .trace-opts { grid-column: 1 / -1; } }
