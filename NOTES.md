@@ -65,3 +65,7 @@ Added fonts are saved in `PC.doc.fonts` and restored when a logo opens.
 ## Picture to SVG
 
 `js/tracer.js` (`window.CraftTracer`, shared with 3DCraft, own copy) with `lib/imagetracer.js` (ImageTracer 1.2.6, public domain). It finds the picture's real colours (k-means on a nearest-pixel copy; clusters under 2.5% are anti-aliased edges and are left out), snaps every pixel to them, then traces with that palette, so there are no slivers along edges. The result goes onto the artboard with `fabric.loadSVGFromString` as one group named Traced picture.
+
+## Start (wizard)
+
+The wand in the title bar's quick buttons and the Start button, first on the Home tab, bring back the start page at any time, so a new logo is always one click away.
