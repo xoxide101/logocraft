@@ -1551,6 +1551,7 @@
     mount: $('app'), storageKey: 'logocraft', extraEls: [toggleL, toggleR],
     tabs: [
       { id: 'home', label: 'Home', hue: '#1fa59a', groups: [
+        ['Start', [{ label: 'Start', icon: I.wand, run: () => showStart(), big: true, title: 'The start page: what do you want to make? (every kind of project, step by step)' }]],
         ['Logo', [C('New logo', 'New logo', I.newPage, { big: true, title: 'Start from a template or a blank artboard' }), { col: [C('Open', 'Open…', I.folder), C('Save', 'Save', I.save), C('Export', 'Export…', I.exportUp)] }]],
         ['Clipboard', [C('Paste', 'Paste', I.paste, { big: true }), { col: [C('Cut', 'Cut', I.cut), C('Copy', 'Copy', I.copy), C('Duplicate', 'Duplicate', I.duplicate)] }]],
         ['Edit', [{ col: [C('Undo', 'Undo', I.undo), C('Redo', 'Redo', I.redo), C('Delete', 'Delete', I.trash)] }]],
@@ -1609,6 +1610,7 @@
   const tb = window.CraftTitlebar({
     appName: 'LogoCraft', storageKey: 'logocraft', colors: ['#1fa59a', '#5b3fc9'], mount: $('app'), toast, logo: LOGO, menus: () => MENUS, ribbon,
     quick: [
+      { icon: 'wand', title: 'Start (wizard)', run: () => showStart() },
       { icon: 'save', title: 'Save', key: 'Ctrl+S', run: () => save(false) },
       { icon: 'undo', title: 'Undo', key: 'Ctrl+Z', run: PC.undo, disabled: () => !PC.canUndo() },
       { icon: 'redo', title: 'Redo', key: 'Ctrl+Y', run: PC.redo, disabled: () => !PC.canRedo() },
