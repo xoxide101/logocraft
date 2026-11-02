@@ -1360,6 +1360,7 @@
       { label: 'Export…', key: 'Ctrl+E', run: openExport, disabled: () => !PC.doc },
       { label: 'Print…', key: 'Ctrl+P', run: openPrint, disabled: () => !PC.doc },
       { label: 'Bring in pictures…', run: () => $('image-input').click(), disabled: () => !PC.doc },
+      { label: 'Clip art from the library…', run: () => window.CraftClipartPicker && CraftClipartPicker.open({ app: 'LogoCraft', onPick: (p) => ins.image(p.file) }), disabled: () => !PC.doc },
     ]],
     ['Edit', [
       { label: 'Undo', key: 'Ctrl+Z', run: PC.undo, disabled: () => !PC.canUndo() },
@@ -1382,6 +1383,7 @@
       '-',
       { label: 'Picture…', run: () => showTab('art') },
       { label: 'My own picture…', run: () => $('image-input').click() },
+      { label: 'Clip art from the library…', run: () => window.CraftClipartPicker && CraftClipartPicker.open({ app: 'LogoCraft', onPick: (p) => ins.image(p.file) }) },
       { label: 'Picture to SVG (trace)…', run: () => openTraceLogo() },
       { label: 'Symbols and emoji…', run: () => openSymbols() },
       { label: 'Border…', run: () => showTab('borders') },
