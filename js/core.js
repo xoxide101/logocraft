@@ -131,7 +131,7 @@
       const sel = bd.querySelector('[aria-pressed=true]') || bd.querySelector('[data-f]'); sel.focus(); sel.scrollIntoView({ block: 'nearest' });
     });
   }
-  const PROPS = ['stamp', 'kind', 'title', 'clip', 'border', 'magic', 'cal', 'art', 'wrap', 'shape', 'tb', 'tabs', 'merge', 'arc', 'fx', 'origSrc', 'name', 'lockAll'];
+  const PROPS = ['stamp', 'kind', 'title', 'clip', 'border', 'magic', 'cal', 'art', 'wrap', 'shape', 'tb', 'tabs', 'merge', 'arc', 'fx', 'origSrc', 'name', 'lockAll', 'barcode'];
 
   const PC = (window.PC = {
     DPI, px, mmOf, ptPx, pxPt, PAPER, KINDS, FONTS, fam, unfam, PROPS, LABEL_STOCK, BCARD, POSTCARD, DISC, ENVELOPE, FORMS,

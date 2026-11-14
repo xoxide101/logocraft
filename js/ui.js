@@ -222,6 +222,15 @@
       });
       r.readAsDataURL(file);
     },
+    // A barcode or QR code from BarcodeCraft's window: a 600 DPI picture placed at its real size in mm.
+    async barcode(m) {
+      const url = await CraftBarcode.dataUrl(m, 600);
+      fabric.Image.fromURL(url, (img) => {
+        const s = px(m.wmm) / img.width;
+        img.set({ scaleX: s, scaleY: s, kind: 'image', wrap: true, barcode: { type: m.type, value: m.value } });
+        place(img);
+      });
+    },
   });
   // Dingbats: classic symbol characters in groups (the same set in every Craft app). They are text, so colour,
   // size, shadow, outline, gradients and rotation all work on them. DINGBAT_FONT is a list of fonts that have them.
@@ -1385,6 +1394,7 @@
       { label: 'My own picture…', run: () => $('image-input').click() },
       { label: 'Clip art from the library…', run: () => window.CraftClipartPicker && CraftClipartPicker.open({ app: 'LogoCraft', onPick: (p) => ins.image(p.file) }) },
       { label: 'Picture to SVG (trace)…', run: () => openTraceLogo() },
+      { label: 'Barcode or QR code…', run: () => window.CraftBarcode && CraftBarcode.open({ app: 'LogoCraft', title: 'Barcode from BarcodeCraft', onInsert: (m) => ins.barcode(m) }), disabled: () => !PC.doc },
       { label: 'Symbols and emoji…', run: () => openSymbols() },
       { label: 'Border…', run: () => showTab('borders') },
       { label: 'Screen Magic…', run: () => showTab('magic') },
@@ -1561,7 +1571,7 @@
       ] },
       { id: 'insert', label: 'Insert', hue: '#e07a1f', groups: [
         ['Words', [C('Title', 'Title', IC.title, { big: true, title: 'A big title with outline, shadow or 3-D' }), C('Text', 'Text', I.text, { big: true, title: 'Simple text you can type anywhere' }), C('Text box', 'Text box', IC.textbox, { big: true, title: 'Words in a box that wrap, with a border, background, padding and shadow' })]],
-        ['Pictures', [C('Picture…', 'Picture', I.picture, { big: true, title: 'Choose from the LogoCraft picture library' }), C('Picture to SVG', 'Picture to SVG', IC.retro, { big: true, title: 'Trace a picture or logo into clean vector outlines (choose how many colours, or best match)' }), { col: [C('My own picture', 'My own picture', I.import), C('Border', 'Border', IC.border), C('Screen Magic', 'Screen Magic', IC.magic)] }]],
+        ['Pictures', [C('Picture…', 'Picture', I.picture, { big: true, title: 'Choose from the LogoCraft picture library' }), C('Picture to SVG', 'Picture to SVG', IC.retro, { big: true, title: 'Trace a picture or logo into clean vector outlines (choose how many colours, or best match)' }), C('Barcode or QR code', 'Barcode', I.barcode || I.picture, { big: true, title: 'A barcode or QR code from BarcodeCraft: your saved ones or a new one, put in at its real size' }), { col: [C('My own picture', 'My own picture', I.import), C('Border', 'Border', IC.border), C('Screen Magic', 'Screen Magic', IC.magic)] }]],
         ['Shapes', [{ col: [
           { row: [C('Box', 'Box', SH.rect, ico), C('Rounded box', 'Rounded box', SH.rounded, ico), C('Circle', 'Circle', SH.ellipse, ico), C('Triangle', 'Triangle', SH.triangle, ico), C('Diamond', 'Diamond', SH.diamond, ico)] },
           { row: [C('Pentagon', 'Pentagon', SH.pentagon, ico), C('Hexagon', 'Hexagon', SH.hexagon, ico), C('Octagon', 'Octagon', SH.octagon, ico), C('Star shape', 'Star', SH.star, ico), C('Arrow', 'Arrow', SH.arrow, ico), C('Line', 'Line', I.line, ico)] }] }]],
