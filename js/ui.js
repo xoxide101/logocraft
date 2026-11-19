@@ -1367,9 +1367,10 @@
       { label: 'Save as…', run: () => save(true), disabled: () => !PC.doc },
       '-',
       { label: 'Export…', key: 'Ctrl+E', run: openExport, disabled: () => !PC.doc },
+      { label: 'Keep in My pictures (every Craft app)', run: () => { const nm = PC.doc.name || 'My logo', o = { trim: true, pad: 4, bg: 'clear', board: PC.doc.board }; CraftClipartPicker.keepAsk({ name: nm, from: 'LogoCraft', pick: 'source', svg: () => PC.exportFile('svg', 800, o), png: () => PC.exportFile('png', 1000, o), source: async () => ({ name: nm + '.logocraft.json', type: 'application/json', text: PC.snapshot() }) }).then((p) => { if (p && p.id) toast('Kept in My pictures: any Craft app has it under Clip art › My pictures.'); }); }, disabled: () => !PC.doc || !window.CraftClipartPicker || !CraftClipartPicker.keep },
       { label: 'Print…', key: 'Ctrl+P', run: openPrint, disabled: () => !PC.doc },
       { label: 'Bring in pictures…', run: () => $('image-input').click(), disabled: () => !PC.doc },
-      { label: 'Clip art from the library…', run: () => window.CraftClipartPicker && CraftClipartPicker.open({ app: 'LogoCraft', onPick: (p) => ins.image(p.file) }), disabled: () => !PC.doc },
+      { label: 'Clip art from the library…', run: () => window.CraftClipartPicker && CraftClipartPicker.open({ app: 'LogoCraft', onPick: (p) => ins.image(p.file), onSource: async (s) => { try { await openDoc(JSON.parse(s.text)); fileName = ''; toast('Opened ' + (s.name || 'the logo') + ' from My pictures'); } catch (err) { toast('Could not open it: ' + err.message); } } }), disabled: () => !PC.doc },
     ]],
     ['Edit', [
       { label: 'Undo', key: 'Ctrl+Z', run: PC.undo, disabled: () => !PC.canUndo() },
