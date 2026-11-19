@@ -1173,7 +1173,7 @@
     await PC.loadPanel(0);
     if (setupKind !== 'blank') await PC.templates(setupKind, { name: name || 'Your Name', tagline: (f.get('tagline') || '').trim(), place: (f.get('place') || '').trim(), year: (f.get('year') || '').trim(), initials: (f.get('initials') || '').trim() || initialsOf(name), pal: pal.slice(1) });
     PC.saveLive(); await PC.loadPanel(0);
-    PC.resetHistory(); PC.dirty = false; fileName = null;
+    PC.resetHistory(); PC.dirty = false; fileName = null; myFile = null;
     renderLayers(); renderPagesTools(); showProps(); status();
   };
 
@@ -1292,10 +1292,25 @@
   $('tracedlg').addEventListener('keydown', (e) => { if (e.key === 'Escape') $('tracedlg').hidden = true; });
 
   // ------------------------------------------------------------------ files
-  let fileName = null;
+  let fileName = null, myFile = null; // where the logo came from: a file (fileName), or My files (myFile: its name in My files › LogoCraft)
   function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+  // ---- My files (FileCraft's file manager: your account and this browser), in the folder LogoCraft
+  async function saveToMyFiles(as) {
+    if (!PC.doc) return; if (!window.CraftFiles) return toast('My files is not in this copy of LogoCraft.');
+    let name = myFile && !as ? myFile : prompt('Save to My files (LogoCraft folder) as:', (PC.doc.name || 'My logo') + '.logocraft.json'); if (!name) return;
+    if (!/\.json$/i.test(name)) name += '.logocraft.json';
+    try { await CraftFiles.saveFile({ folder: 'LogoCraft', name, blob: new Blob([PC.snapshot()], { type: 'application/json' }) }); myFile = name; fileName = null; PC.doc.name = name.replace(/\.logocraft\.json$|\.json$/i, ''); PC.dirty = false; status(); toast(`Saved to My files › LogoCraft › ${name}${window.CraftAccount && CraftAccount.user() ? ' (your account)' : ' (this browser: log in for your account)'}`); }
+    catch (e) { toast('Could not save to My files: ' + e.message); }
+  }
+  async function openFromMyFiles() {
+    if (!window.CraftFiles) return toast('My files is not in this copy of LogoCraft.');
+    if (PC.doc && PC.dirty && !confirm('Open another logo? The changes to this one that are not saved are lost.')) return;
+    const f = await CraftFiles.pick({ app: 'LogoCraft', folder: 'LogoCraft', accept: /\.json$/i, title: 'Open a logo' }); if (!f) return;
+    try { await openDoc(JSON.parse(await f.blob.text())); fileName = null; myFile = f.path.startsWith('files/LogoCraft/') && f.path.split('/').length === 3 ? f.name : null; toast('Opened ' + f.name); } catch (err) { info('Could not open', `<p>${esc(err.message)}</p>`); }
+  }
   async function save(as) {
     if (!PC.doc) return;
+    if (myFile && !as) return saveToMyFiles(false);
     let name = fileName;
     if (as || !name) { name = prompt('Save as', (PC.doc.name || 'My logo') + '.logocraft.json'); if (!name) return; if (!/\.json$/i.test(name)) name += '.logocraft.json'; }
     fileName = name; PC.doc.name = name.replace(/\.logocraft\.json$|\.json$/i, '');
@@ -1313,7 +1328,7 @@
   }
   $('open-input').onchange = async (e) => {
     const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-    try { await openDoc(JSON.parse(await f.text())); fileName = f.name; toast('Opened ' + f.name); } catch (err) { info('Could not open', `<p>${esc(err.message)}</p>`); }
+    try { await openDoc(JSON.parse(await f.text())); fileName = f.name; myFile = null; toast('Opened ' + f.name); } catch (err) { info('Could not open', `<p>${esc(err.message)}</p>`); }
   };
 
   const openPrint = () => PC.openPrintLogo();
@@ -1366,11 +1381,15 @@
       { label: 'Save', key: 'Ctrl+S', run: () => save(false), disabled: () => !PC.doc },
       { label: 'Save as…', run: () => save(true), disabled: () => !PC.doc },
       '-',
+      { label: 'Save to My files', run: () => saveToMyFiles(true), disabled: () => !PC.doc },
+      { label: 'Open from My files…', run: openFromMyFiles },
+      { label: 'My files…', run: () => window.CraftFiles && CraftFiles.open({ app: 'LogoCraft' }) },
+      '-',
       { label: 'Export…', key: 'Ctrl+E', run: openExport, disabled: () => !PC.doc },
       { label: 'Keep in My pictures (every Craft app)', run: () => { const nm = PC.doc.name || 'My logo', o = { trim: true, pad: 4, bg: 'clear', board: PC.doc.board }; CraftClipartPicker.keepAsk({ name: nm, from: 'LogoCraft', pick: 'source', svg: () => PC.exportFile('svg', 800, o), png: () => PC.exportFile('png', 1000, o), source: async () => ({ name: nm + '.logocraft.json', type: 'application/json', text: PC.snapshot() }) }).then((p) => { if (p && p.id) toast('Kept in My pictures: any Craft app has it under Clip art › My pictures.'); }); }, disabled: () => !PC.doc || !window.CraftClipartPicker || !CraftClipartPicker.keep },
       { label: 'Print…', key: 'Ctrl+P', run: openPrint, disabled: () => !PC.doc },
       { label: 'Bring in pictures…', run: () => $('image-input').click(), disabled: () => !PC.doc },
-      { label: 'Clip art from the library…', run: () => window.CraftClipartPicker && CraftClipartPicker.open({ app: 'LogoCraft', onPick: (p) => ins.image(p.file), onSource: async (s) => { try { await openDoc(JSON.parse(s.text)); fileName = ''; toast('Opened ' + (s.name || 'the logo') + ' from My pictures'); } catch (err) { toast('Could not open it: ' + err.message); } } }), disabled: () => !PC.doc },
+      { label: 'Clip art from the library…', run: () => window.CraftClipartPicker && CraftClipartPicker.open({ app: 'LogoCraft', onPick: (p) => ins.image(p.file), onSource: async (s) => { try { await openDoc(JSON.parse(s.text)); fileName = ''; myFile = null; toast('Opened ' + (s.name || 'the logo') + ' from My pictures'); } catch (err) { toast('Could not open it: ' + err.message); } } }), disabled: () => !PC.doc },
     ]],
     ['Edit', [
       { label: 'Undo', key: 'Ctrl+Z', run: PC.undo, disabled: () => !PC.canUndo() },
@@ -1616,7 +1635,7 @@
       ] },
       { id: 'output', label: 'Export', hue: '#138a9e', groups: [
         ['Export', [C('Export', 'Export…', I.exportUp, { big: true, title: 'PNG, JPG, BMP, SVG, PDF or ICO at any size' }), C('Print', 'Print…', I.print, { big: true }), C('Bring in pictures', 'Bring in pictures', I.import, { big: true })]],
-        ['File', [C('Save', 'Save', I.save, { big: true }), { col: [C('Save as', 'Save as…', I.save), C('Open', 'Open…', I.folder)] }]],
+        ['File', [C('Save', 'Save', I.save, { big: true }), { col: [C('Save as', 'Save as…', I.save), C('Open', 'Open…', I.folder)] }, { col: [C('Save to My files', 'To My files', I.save, { title: 'Save to My files (your account, in the LogoCraft folder)' }), C('Open from My files', 'From My files', I.folder, { title: 'Open a logo from My files' }), C('Keep in My pictures', 'Keep as picture', I.save, { title: 'Keep it in My pictures (SVG, a picture, or the logo to change again)' })] }]],
       ] },
     ],
   });
@@ -1636,7 +1655,7 @@
       { text: PC.ARTBOARDS[PC.doc.board] ? PC.ARTBOARDS[PC.doc.board][0] : 'Logo', title: 'Artboard' },
       { text: PC.doc.retro ? (PC.doc.retroMode === 'color' ? 'Retro colour' : 'Retro B&W') : 'Modern', title: 'Look (click to switch)', run: () => setRetro(!PC.doc.retro) },
     ] : []),
-    rightEls: [THEME_BTN],
+    rightEls: [window.CraftAccount && CraftAccount.button ? CraftAccount.button() : null, THEME_BTN].filter(Boolean),
     onHelp: PC.ui.help,
   });
   window.__tb = tb;

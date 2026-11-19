@@ -135,3 +135,10 @@ Open-source libraries it uses are listed with their licences in Credits.
 ## Development notes
 
 How LogoCraft is built is described in [NOTES.md](NOTES.md).
+
+## Your account
+
+LogoCraft works without a login. With a Craft account (AccountCraft, on the same web site), the title bar's 👤 logs
+you in: **Save to My files** keeps the logo in your account (My files › LogoCraft), **Open from My files…** opens one
+from there (or any folder, or My computer), Ctrl+S saves back where it came from, and **Keep in My pictures** keeps it
+for every Craft app (SVG, a picture, or the logo itself to change again). **My files…** opens FileCraft's file manager.
