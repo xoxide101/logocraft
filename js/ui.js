@@ -1306,7 +1306,7 @@
     if (!window.CraftFiles) return toast('My files is not in this copy of LogoCraft.');
     if (PC.doc && PC.dirty && !confirm('Open another logo? The changes to this one that are not saved are lost.')) return;
     const f = await CraftFiles.pick({ app: 'LogoCraft', folder: 'LogoCraft', accept: /\.json$/i, title: 'Open a logo' }); if (!f) return;
-    try { await openDoc(JSON.parse(await f.blob.text())); fileName = null; myFile = f.path.startsWith('files/LogoCraft/') && f.path.split('/').length === 3 ? f.name : null; toast('Opened ' + f.name); } catch (err) { info('Could not open', `<p>${esc(err.message)}</p>`); }
+    try { await openDoc(JSON.parse(await f.blob.text())); fileName = null; myFile = f.path === 'files/LogoCraft' || f.path === 'files/LogoCraft/' + f.name ? f.name : null; toast('Opened ' + f.name); } catch (err) { info('Could not open', `<p>${esc(err.message)}</p>`); }
   }
   async function save(as) {
     if (!PC.doc) return;
