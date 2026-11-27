@@ -1,0 +1,9 @@
+{
+ "name": "LogoCraft",
+ "icon": "🔰",
+ "about": "Logos and seals",
+ "group": "Make and design",
+ "order": 20,
+ "entry": "index.html",
+ "status": "beta"
+}
